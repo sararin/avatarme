@@ -24,7 +24,7 @@ func FromHash(u uint64) []byte {
 			currentColor = fgColor
 		}
 
-		if y&5 == 0 {
+		if y%5 == 0 {
 			i++
 		}
 
