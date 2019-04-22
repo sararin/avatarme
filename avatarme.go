@@ -12,9 +12,11 @@ func Draw(b []byte) (string, error) {
 	if err != nil {
 		return "", err
 	}
-	result, err := drawimg.FromHash(a) //should return []byte png.Encode(&buffer, imageData) should do the trick
+
+	result, err := drawimg.FromHash(uint64(10555899939929309))
 	if err != nil {
 		return "", err
 	}
+
 	return base64.StdEncoding.EncodeToString(result), nil
 }
