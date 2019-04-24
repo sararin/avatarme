@@ -1,14 +1,15 @@
+// Package avatarme provides easy way to create very simple Identicons.
+// It can be used both to return a base64 encoded string and save image in PNG format.
 package avatarme
 
 import (
-	"github.com/SaraTrawnik/avatarme/uniqhash"
-	"github.com/SaraTrawnik/avatarme/drawimg"
 	"encoding/base64"
 	"os"
 	"image"
 	"image/png"
 )
 
+// Draw transforms given data into identicon and saves it as 5x5 PNG file with given filename.
 func Draw(b []byte, filename string) error {
 	base, err := DrawToBase64(b)
 	reader := base64.NewDecoder(base64.StdEncoding, strings.NewReader(base))
@@ -24,14 +25,16 @@ func Draw(b []byte, filename string) error {
 	
 	return nil
 }
-	
+
+// DrawToBase64 transforms given data into a base64 encoded string.
+// It empty string nothing upon failure.	
 func DrawToBase64(b []byte) (string, error) {
-	h, err := uniqhash.Encrypt(b)
+	h, err := Encrypt(b)
 	if err != nil {
 		return "", err
 	}
 
-	result, err := drawimg.FromHash(h)
+	result, err := FromHash(h)
 	if err != nil {
 		return "", err
 	}
