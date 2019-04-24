@@ -1,63 +1,50 @@
 package drawimg
 
 import (
-	"fmt"
 	"bytes"
 	"image"
 	"image/color"
 	"image/png"
 )
 
-func FromHash(u uint64) []byte {
+func FromHash(u uint64) ([]byte, error) {
 	height, width := 5, 5
 	img := image.NewRGBA(image.Rect(0, 0, height, width))
 
 	shape := deduceShape(u)
 	fgColor, bgColor := getColors(u)
-
 	var currentColor color.RGBA
-	var i int = 0
 	for y, x := range shape {
-		if x == 0 { 
-			currentColor = bgColor 
-		} else {
+		for f, g := range x {
 			currentColor = fgColor
+			if g == 0 {
+				currentColor = bgColor
+			}
+			img.Set(y, f, currentColor)
 		}
-
-		if y%5 == 0 {
-			i++
-		}
-
-		img.Set(i, y%5,  currentColor)
-
 	}
 	
 	var buff bytes.Buffer
 	png.Encode(&buff, img)
-	return buff.Bytes()
+	return buff.Bytes(), nil
 }
 
-func deduceShape(u uint64) [25]int {
-	basicShape := [25]int{}
-	x := 0
-	f := u
+func deduceShape(u uint64) [5][5]int {
 	for i := uint64(0); i < 64; i++ {
-		if (f & (1 << i)) != 0 {
-			basicShape[x] = 1
-		} else {
-			basicShape[x] = 0
+		basicShape[x][y] = 0
+		if (u & (1 << i)) != 0 {
+			basicShape[x][y] = 1
 		}
-		if x >= 14 { x = -1 }
 		x++
+		if x > 3 { y++; x = 0 }
+		if y > 3 { y = 0 }
 	}
-	
-	for i := 15; i < 21; i++ {
-		basicShape[i] = basicShape[i-10]
+	for y, x := range basicShape[0] {
+		basicShape[4][y] = x
 	}
-	for i := 20; i < 25; i++ {
-		basicShape[i] = basicShape[i-20]
+	for y, x := range basicShape[1] {
+		basicShape[3][y] = x
 	}
-	
 	return basicShape
 }
 
