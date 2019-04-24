@@ -12,3 +12,5 @@
 *.out
 
 # Folders which are no longer needed
+/drawimg
+/uniqhash
